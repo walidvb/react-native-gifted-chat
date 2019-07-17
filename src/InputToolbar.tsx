@@ -39,6 +39,7 @@ export interface InputToolbarProps {
   containerStyle?: StyleProp<ViewStyle>
   primaryStyle?: StyleProp<ViewStyle>
   accessoryStyle?: StyleProp<ViewStyle>
+  handleAvoidingKeyboard?: boolean
   renderAccessory?(props: InputToolbarProps): React.ReactNode
   renderActions?(props: Actions['props']): React.ReactNode
   renderSend?(props: Send['props']): React.ReactNode
@@ -59,6 +60,7 @@ export default class InputToolbar extends React.Component<
     primaryStyle: {},
     accessoryStyle: {},
     onPressActionButton: () => {},
+    handleAvoidingKeyboard: true,
   }
 
   static propTypes = {
@@ -70,6 +72,7 @@ export default class InputToolbar extends React.Component<
     containerStyle: ViewPropTypes.style,
     primaryStyle: ViewPropTypes.style,
     accessoryStyle: ViewPropTypes.style,
+    handleAvoidingKeyboard: PropTypes.bool
   }
 
   state = {
@@ -79,15 +82,17 @@ export default class InputToolbar extends React.Component<
   keyboardWillShowListener?: EmitterSubscription = undefined
   keyboardWillHideListener?: EmitterSubscription = undefined
 
-  componentDidMount() {
-    this.keyboardWillShowListener = Keyboard.addListener(
-      'keyboardWillShow',
-      this.keyboardWillShow,
-    )
-    this.keyboardWillHideListener = Keyboard.addListener(
-      'keyboardWillHide',
-      this.keyboardWillHide,
-    )
+  componentWillMount() {
+    if (this.props.handleAvoidingKeyboard){
+      this.keyboardWillShowListener = Keyboard.addListener(
+        'keyboardWillShow',
+        this.keyboardWillShow,
+      )
+      this.keyboardWillHideListener = Keyboard.addListener(
+        'keyboardWillHide',
+        this.keyboardWillHide,
+      )
+    }
   }
 
   componentWillUnmount() {
